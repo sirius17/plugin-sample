@@ -28,8 +28,8 @@ namespace Plugins.WebHooks
         {
             var signature = new MethodSignature
             {
-                TargetType = typeof(IAction),
-                Name = "Create"
+                TargetType = typeof(IDirectory),
+                Name = "CreateUser"
             };
             signature.Parameters.Add(typeof(User));
             return signature;

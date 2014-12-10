@@ -1,0 +1,17 @@
+﻿<container>
+      <extension type="Interception" />
+      <extension type="Plugins.WebHooks.AspectRegistrationExtension, Plugins.WebHooks" />
+      
+			<register type="IDirectory" mapTo="DBDirectory" name="DBDirectory">
+        <interceptor type="InterfaceInterceptor" />
+        <interceptionBehavior type="PolicyInjectionBehavior" />  
+      </register>
+			<register type="IDirectory" mapTo="FBDirectory" name="FBDirectory">
+        <interceptor type="InterfaceInterceptor" />
+        <interceptionBehavior type="PolicyInjectionBehavior" />  
+      </register>
+			<register type="IDirectory" mapTo="GDirectory" name="GoogleDirectory">
+        <interceptor type="InterfaceInterceptor" />
+        <interceptionBehavior type="PolicyInjectionBehavior" />  
+      </register>
+</container>

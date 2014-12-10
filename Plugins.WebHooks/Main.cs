@@ -23,14 +23,12 @@ namespace Plugins.WebHooks
             UnityContainer container = new UnityContainer();
             container.AddNewExtension<Interception>();
             container.AddNewExtension<AspectRegistrationExtension>();
-            container.RegisterType<IAction, NopAction>(
+            container.RegisterType<IDirectory, NopDirectory>(
                 new InterceptionBehavior<PolicyInjectionBehavior>(),
                 new Interceptor<InterfaceInterceptor>());
 
-            var action = container.Resolve<IAction>();
-            action.Do("test" as object);
-            action.Do2();
-            action.Create(new User { Id = "123", UserName = "john.doe", Name = new UserName { FirstName = "John", LastName = "Doe" } });
+            var action = container.Resolve<IDirectory>();
+            action.CreateUser(new User { Id = "123", UserName = "john.doe", Name = new UserName { FirstName = "John", LastName = "Doe" } });
             
             Console.WriteLine("Press any key to end..");
             Console.ReadKey(true);
@@ -53,93 +51,18 @@ namespace Plugins.WebHooks
         public string LastName { get; set; }
     }
 
-    public class WebHookFilter : VexiereAspect
+    public interface IDirectory
     {
-
-        protected override bool OnBeforeExecution(IInputArguments arguments, out object returnValue)
-        {
-            returnValue = null;
-            return false;
-        }
-
-        protected override MethodSignature GetMatchingMethod()
-        {
-            var signature = new MethodSignature
-            {
-                TargetType = typeof(IAction),
-                Name = "Create"
-            };
-            signature.Parameters.Add(typeof(User));
-            return signature;
-        }
-
-        protected override bool OnAfterExecution(IInputArguments args, object output, out object newOutput)
-        {
-            newOutput = null;
-            var user = args[0] as User;
-            PostCreatedUser(user);
-            return false;
-        }
-
-        private void PostCreatedUser(User user)
-        {
-            Console.WriteLine("Posting to web hook.");
-            // Post async
-            Task.Factory.StartNew(() =>
-                {
-                    var json = new JObject(
-                        new JProperty("id", user.Id),
-                        new JProperty("username", user.UserName),
-                        new JProperty("firstName", user.Name.FirstName),
-                        new JProperty("lastName", user.Name.LastName));
-                    byte[] data = null;
-                    using (var buffer = new MemoryStream())
-                    {
-                        using (var streamWriter = new StreamWriter(buffer, Encoding.UTF8))
-                        {
-                            using (var jsonWriter = new JsonTextWriter(streamWriter))
-                            {
-                                json.WriteTo(jsonWriter);
-                                
-                            }
-                        }
-                        data = buffer.ToArray();
-                    }
-
-                    System.Net.WebClient wc = new System.Net.WebClient();
-                    wc.Headers[HttpRequestHeader.ContentType] = "application/json";
-                    wc.UploadData(Configuration.PostUrl, "POST", data);
-                });
-        }
+        User CreateUser(User user);
     }
 
-    public interface IAction
+    public class NopDirectory : IDirectory
     {
-        void Do(object target);
-
-        void Do2();
-
-        void Create(User user);
-    }
-
-    public class NopAction : IAction
-    {
-        public void Do(object target)
-        {
-            Console.WriteLine("Doing nothing.");
-            // Do nothing
-        }
-
-        public void Do2()
-        {
-            Console.WriteLine("Doing nothing.");
-            // Do nothing
-        }
-
-        public void Create(User user)
+        public User CreateUser(User user)
         {
             // Created user
             Console.WriteLine("Created the user.");
+            return user;
         }
     }
 
@@ -172,7 +95,7 @@ namespace Plugins.WebHooks
         {
             var method = new MethodSignature
             {
-                TargetType = typeof(IAction),
+                TargetType = typeof(IDirectory),
                 Name = "Create"
             };
             method.Parameters.Add(typeof(User));
