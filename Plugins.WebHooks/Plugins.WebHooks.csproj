@@ -63,9 +63,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aspects\WebHookFilter.cs" />
+    <Compile Include="Framework\AspectConfiguration.cs" />
+    <Compile Include="Framework\AspectRegistrationExtension.cs" />
+    <Compile Include="Framework\ISetupInterception.cs" />
+    <Compile Include="Framework\IInputArguments.cs" />
+    <Compile Include="Framework\MethodSignature.cs" />
+    <Compile Include="Framework\Extensions.cs" />
+    <Compile Include="Framework\InputArguments.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WebhookAspect.cs" />
+    <Compile Include="Framework\VexiereAspect.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
