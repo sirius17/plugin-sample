@@ -70,7 +70,7 @@ namespace Plugins.WebHooks
 
         public User GetUser(string userId)
         {
-            throw new NotImplementedException();
+            return new User() {UserName = userId};
         }
     }
 
