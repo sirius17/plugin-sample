@@ -54,6 +54,8 @@ namespace Plugins.WebHooks
     public interface IDirectory
     {
         User CreateUser(User user);
+
+        User GetUser(string userId);
     }
 
     public class NopDirectory : IDirectory
@@ -63,6 +65,12 @@ namespace Plugins.WebHooks
             // Created user
             Console.WriteLine("Created the user.");
             return user;
+        }
+
+
+        public User GetUser(string userId)
+        {
+            return new User() {UserName = userId};
         }
     }
 
